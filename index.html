@@ -2,60 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>DVD Logo - Random Bounce</title>
-  <link rel="icon" href="logo2.png" type="image/png">
+  <title>DVD Logo (Original Accurate)</title>
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: #000000;
-      overflow: hidden;
-      height: 100%;
-    }
-    #logo {
-      position: absolute;
-      width: 150px;
-      height: auto;
-    }
-    .preload { display: none; }
+    body { margin:0; background:#000; overflow:hidden; height:100%; }
+    #logo { position:absolute; width:150px; height:auto; }
   </style>
 </head>
 <body>
-  <img id="logo" src="4.png" alt="Bouncing Logo">
-  
-  <!-- Preload all logo versions -->
-  <img class="preload" src="1.png" alt="">
-  <img class="preload" src="2.png" alt="">
-  <img class="preload" src="3.png" alt="">
-  <img class="preload" src="4.png" alt="">
-  <img class="preload" src="5.png" alt="">
+  <img id="logo" src="dvd-logo.png" alt="DVD Logo">
 
   <script>
     const logo = document.getElementById('logo');
     let x = 100, y = 100;
-    let dx = 3, dy = 3; // Initial speed (can be any value)
-    let currentLogo = 4;
-    const totalLogos = 5;
+    let dx = 3, dy = 3; // Original used 45° angles (dx == dy)
     
-    // Preload all images
-    const preloaded = [];
-    for (let i = 1; i <= totalLogos; i++) {
-      const img = new Image();
-      img.src = i + '.png';
-      preloaded.push(img);
-    }
-
-    function changeLogo() {
-      currentLogo = (currentLogo % totalLogos) + 1;
-      logo.src = preloaded[currentLogo-1].src;
-    }
-
-    function getRandomAngle() {
-      // Returns random angle between -45 and 45 degrees (converted to radians)
-      const degrees = (Math.random() * 90) - 45; // -45° to +45°
-      return degrees * Math.PI / 180;
-    }
-
     function bounce() {
       const rect = logo.getBoundingClientRect();
       const winWidth = window.innerWidth;
@@ -64,30 +24,12 @@
       x += dx;
       y += dy;
 
-      const hitLeft = x <= 0;
-      const hitRight = x + rect.width >= winWidth;
-      const hitTop = y <= 0;
-      const hitBottom = y + rect.height >= winHeight;
-
-      if (hitLeft || hitRight) {
-        const angle = getRandomAngle();
-        const speed = Math.sqrt(dx*dx + dy*dy); // Maintain current speed
-        dx = hitLeft ? Math.abs(speed * Math.cos(angle)) : -Math.abs(speed * Math.cos(angle));
-        dy = speed * Math.sin(angle);
-        changeLogo();
-      }
-
-      if (hitTop || hitBottom) {
-        const angle = getRandomAngle();
-        const speed = Math.sqrt(dx*dx + dy*dy); // Maintain current speed
-        dx = speed * Math.sin(angle);
-        dy = hitTop ? Math.abs(speed * Math.cos(angle)) : -Math.abs(speed * Math.cos(angle));
-        changeLogo();
-      }
+      // Original behavior: perfect mirror reflection
+      if (x <= 0 || x + rect.width >= winWidth) dx *= -1;
+      if (y <= 0 || y + rect.height >= winHeight) dy *= -1;
 
       logo.style.left = x + 'px';
       logo.style.top = y + 'px';
-
       requestAnimationFrame(bounce);
     }
 
