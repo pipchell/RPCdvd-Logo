@@ -12,6 +12,85 @@
       height: 100%;
     }
 
+    #logo-container {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+    }
+
+    #logo-image {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    #emoji-fallback {
+      font-size: 100px;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      line-height: 150px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="logo-container">
+    <img id="logo-image" src="logo2.png" alt="Bouncing Logo" onerror="showEmoji()">
+    <div id="emoji-fallback">🔵</div> <!-- Fallback emoji (change to your preference) -->
+  </div>
+
+  <script>
+    const container = document.getElementById('logo-container');
+    const logoImage = document.getElementById('logo-image');
+    const emojiFallback = document.getElementById('emoji-fallback');
+    let x = 100, y = 100;
+    let dx = 2, dy = 2;
+
+    function showEmoji() {
+      logoImage.style.display = 'none';
+      emojiFallback.style.display = 'block';
+    }
+
+    // Check if image fails to load immediately (e.g., missing file)
+    if (!logoImage.complete || logoImage.naturalWidth === 0) {
+      showEmoji();
+    }
+
+    function bounce() {
+      const winWidth = window.innerWidth;
+      const winHeight = window.innerHeight;
+      const rect = container.getBoundingClientRect();
+
+      x += dx;
+      y += dy;
+
+      if (x + rect.width >= winWidth || x <= 0) dx *= -1;
+      if (y + rect.height >= winHeight || y <= 0) dy *= -1;
+
+      container.style.left = x + 'px';
+      container.style.top = y + 'px';
+
+      requestAnimationFrame(bounce);
+    }
+
+    bounce();
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RPClogo DVD</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+      height: 100%;
+    }
+
     #logo {
       position: absolute;
       width: 150px;
