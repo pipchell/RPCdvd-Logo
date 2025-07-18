@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>RPClogo DVD/title>
+  <title>RPClogo DVD</title>
   <style>
     html, body {
       margin: 0;
@@ -17,18 +17,38 @@
       width: 150px;
       height: auto;
     }
+    
+    .emoji-fallback {
+      font-size: 100px;
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      text-align: center;
+      line-height: 150px;
+      display: none;
+    }
   </style>
 </head>
 <body>
-  <img id="logo" src="logo2.png" alt="Bouncing Logo">
+  <img id="logo" src="logo2.png" alt="Bouncing Logo" onerror="useEmojiFallback()">
+  <div id="emoji-fallback" class="emoji-fallback">🔄</div> <!-- Default emoji, change as needed -->
 
   <script>
     const logo = document.getElementById('logo');
+    const emojiFallback = document.getElementById('emoji-fallback');
     let x = 100, y = 100;
     let dx = 2, dy = 2;
+    let currentElement = logo; // Track which element is currently bouncing
+
+    function useEmojiFallback() {
+      // Hide the image and show the emoji
+      logo.style.display = 'none';
+      emojiFallback.style.display = 'block';
+      currentElement = emojiFallback;
+    }
 
     function bounce() {
-      const rect = logo.getBoundingClientRect();
+      const rect = currentElement.getBoundingClientRect();
       const winWidth = window.innerWidth;
       const winHeight = window.innerHeight;
 
@@ -42,8 +62,8 @@
         dy *= -1;
       }
 
-      logo.style.left = x + 'px';
-      logo.style.top = y + 'px';
+      currentElement.style.left = x + 'px';
+      currentElement.style.top = y + 'px';
 
       requestAnimationFrame(bounce);
     }
