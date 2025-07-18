@@ -38,9 +38,8 @@
     let dx = 3, dy = 3;
     let currentLogo = 4;
     const totalLogos = 5;
-    let lastBounceTime = 0;
-    const bounceCooldown = 100; // milliseconds
     
+    // Preload all images
     const preloaded = [];
     for (let i = 1; i <= totalLogos; i++) {
       const img = new Image();
@@ -53,29 +52,38 @@
       logo.src = preloaded[currentLogo-1].src;
     }
 
-    function bounce(timestamp) {
+    function bounce() {
       const rect = logo.getBoundingClientRect();
       const winWidth = window.innerWidth;
       const winHeight = window.innerHeight;
 
+      // Store previous position
+      const prevX = x;
+      const prevY = y;
+
+      // Move logo
       x += dx;
       y += dy;
 
-      let bounced = false;
+      // Check for edge collisions
+      const hitLeft = x <= 0;
+      const hitRight = x + rect.width >= winWidth;
+      const hitTop = y <= 0;
+      const hitBottom = y + rect.height >= winHeight;
 
-      if (x <= 0 || x + rect.width >= winWidth) {
+      if (hitLeft || hitRight) {
         dx *= -1;
-        bounced = true;
+        x = hitLeft ? 0 : winWidth - rect.width; // Snap to exact edge position
       }
-      if (y <= 0 || y + rect.height >= winHeight) {
+      if (hitTop || hitBottom) {
         dy *= -1;
-        bounced = true;
+        y = hitTop ? 0 : winHeight - rect.height; // Snap to exact edge position
       }
 
-      // Only change logo if we bounced and cooldown has passed
-      if (bounced && timestamp - lastBounceTime > bounceCooldown) {
+      // Only change logo if we actually crossed a boundary
+      if ((hitLeft || hitRight || hitTop || hitBottom) && 
+          !(prevX === x && prevY === y)) {
         changeLogo();
-        lastBounceTime = timestamp;
       }
 
       logo.style.left = x + 'px';
@@ -84,7 +92,7 @@
       requestAnimationFrame(bounce);
     }
 
-    bounce(performance.now());
+    bounce();
   </script>
 </body>
 </html>
