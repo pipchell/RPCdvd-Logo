@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <title>RPClogo DVD</title>
   <!-- Favicon for all browsers -->
-  <link rel="icon" href="logo2.png" type="image/png">
-  <link rel="shortcut icon" href="logo2.png">
-  <link rel="apple-touch-icon" href="logo2.png">
+  <link rel="icon" href="1.png" type="image/png">
+  <link rel="shortcut icon" href="1.png">
+  <link rel="apple-touch-icon" href="1.png">
   
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      background: #000000; /* Pure black background (same as original) */
+      background: #000000;
       overflow: hidden;
       height: 100%;
     }
@@ -24,12 +24,25 @@
   </style>
 </head>
 <body>
-  <img id="logo" src="logo2.png" alt="Bouncing Logo">
+  <img id="logo" src="1.png" alt="Bouncing Logo">
 
   <script>
     const logo = document.getElementById('logo');
     let x = 100, y = 100;
-    let dx = 2, dy = 2; /* Same speed as original (2px per frame) */
+    let dx = 2, dy = 2;
+    let currentLogo = 1;
+    const totalLogos = 5;
+    let bounceCount = 0;
+    const bouncesBeforeChange = 5; // Change logo after this many bounces
+
+    function changeLogo() {
+      currentLogo = (currentLogo % totalLogos) + 1;
+      logo.src = currentLogo + '.png';
+      // Update favicon too
+      document.querySelector('link[rel="icon"]').href = currentLogo + '.png';
+      document.querySelector('link[rel="shortcut icon"]').href = currentLogo + '.png';
+      document.querySelector('link[rel="apple-touch-icon"]').href = currentLogo + '.png';
+    }
 
     function bounce() {
       const rect = logo.getBoundingClientRect();
@@ -39,8 +52,23 @@
       x += dx;
       y += dy;
 
-      if (x + rect.width >= winWidth || x <= 0) dx *= -1;
-      if (y + rect.height >= winHeight || y <= 0) dy *= -1;
+      let bounced = false;
+      if (x + rect.width >= winWidth || x <= 0) {
+        dx *= -1;
+        bounced = true;
+      }
+      if (y + rect.height >= winHeight || y <= 0) {
+        dy *= -1;
+        bounced = true;
+      }
+
+      if (bounced) {
+        bounceCount++;
+        if (bounceCount >= bouncesBeforeChange) {
+          changeLogo();
+          bounceCount = 0;
+        }
+      }
 
       logo.style.left = x + 'px';
       logo.style.top = y + 'px';
@@ -48,7 +76,6 @@
       requestAnimationFrame(bounce);
     }
 
-    // Start the animation
     bounce();
   </script>
 </body>
