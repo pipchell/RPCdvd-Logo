@@ -1,7 +1,5 @@
 # RPClogo DVD by RPCgroup
 
-![Banner Image](https://example.com/dvd-banner.jpg)
-
 ## 🌐 Project Overview
 
 This project perfectly recreates the classic DVD logo screensaver with enhanced capabilities. Originally developed as a nostalgia piece, it has evolved into a full-featured animation system with:
