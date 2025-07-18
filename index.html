@@ -2,37 +2,154 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>DVD Logo (Original Accurate)</title>
+  <title>RPClogo DVD</title>
+  <!-- Static favicon -->
+  <link rel="icon" href="logo2.png" type="image/png">
+  <link rel="shortcut icon" href="logo2.png">
+  <link rel="apple-touch-icon" href="logo2.png">
+  
   <style>
-    body { margin:0; background:#000; overflow:hidden; height:100%; }
-    #logo { position:absolute; width:150px; height:auto; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #000000;
+      overflow: hidden;
+      height: 100%;
+    }
+    #logo {
+      position: absolute;
+      width: 150px;
+      height: auto;
+    }
+    /* Hide preloaded images */
+    .preload { display: none; }
   </style>
 </head>
 <body>
-  <img id="logo" src="dvd-logo.png" alt="DVD Logo">
+  <!-- Visible logo starting with 4.png -->
+  <img id="logo" src="4.png" alt="Bouncing Logo">
+  
+  <!-- Preload all logo versions -->
+  <img class="preload" src="1.png" alt="">
+  <img class="preload" src="2.png" alt="">
+  <img class="preload" src="3.png" alt="">
+  <img class="preload" src="4.png" alt="">
+  <img class="preload" src="5.png" alt="">
 
   <script>
     const logo = document.getElementById('logo');
     let x = 100, y = 100;
-    let dx = 3, dy = 3; // Original used 45° angles (dx == dy)
+    let dx = 2, dy = 2; // Slower speed for more authentic feel
+    let currentLogo = 4; // Start with 4.png
+    const totalLogos = 5;
     
+    // Preload all images
+    const preloaded = [];
+    for (let i = 1; i <= totalLogos; i++) {
+      const img = new Image();
+      img.src = i + '.png';
+      preloaded.push(img);
+    }
+
+    function changeLogo() {
+      currentLogo = (currentLogo % totalLogos) + 1;
+      logo.src = preloaded[currentLogo-1].src;
+    }
+
     function bounce() {
       const rect = logo.getBoundingClientRect();
       const winWidth = window.innerWidth;
       const winHeight = window.innerHeight;
 
-      x += dx;
-      y += dy;
+      // Calculate next position
+      const nextX = x + dx;
+      const nextY = y + dy;
 
-      // Original behavior: perfect mirror reflection
-      if (x <= 0 || x + rect.width >= winWidth) dx *= -1;
-      if (y <= 0 || y + rect.height >= winHeight) dy *= -1;
+      // Check for collisions with edges
+      const hitLeft = nextX <= 0;
+      const hitRight = nextX + rect.width >= winWidth;
+      const hitTop = nextY <= 0;
+      const hitBottom = nextY + rect.height >= winHeight;
+
+      // If we're about to hit both horizontal and vertical edges (corner hit)
+      if ((hitLeft || hitRight) && (hitTop || hitBottom)) {
+        dx *= -1;
+        dy *= -1;
+        changeLogo();
+        
+        // Adjust position to exactly hit the corner
+        if (hitLeft && hitTop) {
+          x = 0;
+          y = 0;
+        } else if (hitLeft && hitBottom) {
+          x = 0;
+          y = winHeight - rect.height;
+        } else if (hitRight && hitTop) {
+          x = winWidth - rect.width;
+          y = 0;
+        } else if (hitRight && hitBottom) {
+          x = winWidth - rect.width;
+          y = winHeight - rect.height;
+        }
+      } 
+      // Horizontal edge hit
+      else if (hitLeft || hitRight) {
+        dx *= -1;
+        changeLogo();
+        
+        // Adjust position to exactly hit the edge
+        if (hitLeft) {
+          x = 0;
+        } else {
+          x = winWidth - rect.width;
+        }
+      } 
+      // Vertical edge hit
+      else if (hitTop || hitBottom) {
+        dy *= -1;
+        changeLogo();
+        
+        // Adjust position to exactly hit the edge
+        if (hitTop) {
+          y = 0;
+        } else {
+          y = winHeight - rect.height;
+        }
+      } 
+      // No collision, just move
+      else {
+        x = nextX;
+        y = nextY;
+      }
 
       logo.style.left = x + 'px';
       logo.style.top = y + 'px';
+
       requestAnimationFrame(bounce);
     }
 
+    // Start in a random position with random direction
+    function randomStart() {
+      const rect = logo.getBoundingClientRect();
+      const winWidth = window.innerWidth;
+      const winHeight = window.innerHeight;
+      
+      // Random position (within bounds)
+      x = Math.random() * (winWidth - rect.width);
+      y = Math.random() * (winHeight - rect.height);
+      
+      // Random direction (but not too slow)
+      const speed = 2;
+      const angle = Math.random() * Math.PI * 2;
+      dx = Math.cos(angle) * speed;
+      dy = Math.sin(angle) * speed;
+      
+      // Ensure we have some movement in both directions
+      if (Math.abs(dx) < 0.5) dx = dx < 0 ? -0.5 : 0.5;
+      if (Math.abs(dy) < 0.5) dy = dy < 0 ? -0.5 : 0.5;
+    }
+
+    randomStart();
     bounce();
   </script>
 </body>
