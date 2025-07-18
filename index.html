@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>RPClogo DVD</title>
-  <!-- Static favicon (always logo2.png) -->
+  <!-- Static favicon -->
   <link rel="icon" href="logo2.png" type="image/png">
   <link rel="shortcut icon" href="logo2.png">
   <link rel="apple-touch-icon" href="logo2.png">
@@ -21,21 +21,39 @@
       width: 150px;
       height: auto;
     }
+    /* Hide preloaded images */
+    .preload { display: none; }
   </style>
 </head>
 <body>
+  <!-- Visible logo -->
   <img id="logo" src="1.png" alt="Bouncing Logo">
+  
+  <!-- Preload all logo versions -->
+  <img class="preload" src="1.png" alt="">
+  <img class="preload" src="2.png" alt="">
+  <img class="preload" src="3.png" alt="">
+  <img class="preload" src="4.png" alt="">
+  <img class="preload" src="5.png" alt="">
 
   <script>
     const logo = document.getElementById('logo');
     let x = 100, y = 100;
-    let dx = 2, dy = 2; // Original speed
+    let dx = 2, dy = 2;
     let currentLogo = 1;
-    const totalLogos = 5; // 1.png through 5.png
+    const totalLogos = 5;
+    
+    // Preload all images
+    const preloaded = [];
+    for (let i = 1; i <= totalLogos; i++) {
+      const img = new Image();
+      img.src = i + '.png';
+      preloaded.push(img);
+    }
 
     function changeLogo() {
-      currentLogo = (currentLogo % totalLogos) + 1; // Cycle 1→2→3→4→5→1...
-      logo.src = currentLogo + '.png';
+      currentLogo = (currentLogo % totalLogos) + 1;
+      logo.src = preloaded[currentLogo-1].src; // Use preloaded image
     }
 
     function bounce() {
@@ -46,7 +64,6 @@
       x += dx;
       y += dy;
 
-      // Check for edge hits
       const hitLeft = x <= 0;
       const hitRight = x + rect.width >= winWidth;
       const hitTop = y <= 0;
@@ -54,11 +71,11 @@
 
       if (hitLeft || hitRight) {
         dx *= -1;
-        changeLogo(); // Change on horizontal bounces
+        changeLogo();
       }
       if (hitTop || hitBottom) {
         dy *= -1;
-        changeLogo(); // Change on vertical bounces
+        changeLogo();
       }
 
       logo.style.left = x + 'px';
