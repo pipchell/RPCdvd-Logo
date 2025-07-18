@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>RPClogo DVD</title>
-  <!-- Static favicon -->
   <link rel="icon" href="logo2.png" type="image/png">
   <link rel="shortcut icon" href="logo2.png">
   <link rel="apple-touch-icon" href="logo2.png">
@@ -21,15 +20,12 @@
       width: 150px;
       height: auto;
     }
-    /* Hide preloaded images */
     .preload { display: none; }
   </style>
 </head>
 <body>
-  <!-- Visible logo starting with 4.png -->
   <img id="logo" src="4.png" alt="Bouncing Logo">
   
-  <!-- Preload all logo versions -->
   <img class="preload" src="1.png" alt="">
   <img class="preload" src="2.png" alt="">
   <img class="preload" src="3.png" alt="">
@@ -39,11 +35,12 @@
   <script>
     const logo = document.getElementById('logo');
     let x = 100, y = 100;
-    let dx = 3, dy = 3; // Adjusted to 3px/frame for perfect speed
-    let currentLogo = 4; // Start with 4.png
+    let dx = 3, dy = 3;
+    let currentLogo = 4;
     const totalLogos = 5;
+    let lastBounceTime = 0;
+    const bounceCooldown = 100; // milliseconds
     
-    // Preload all images
     const preloaded = [];
     for (let i = 1; i <= totalLogos; i++) {
       const img = new Image();
@@ -56,7 +53,7 @@
       logo.src = preloaded[currentLogo-1].src;
     }
 
-    function bounce() {
+    function bounce(timestamp) {
       const rect = logo.getBoundingClientRect();
       const winWidth = window.innerWidth;
       const winHeight = window.innerHeight;
@@ -64,18 +61,21 @@
       x += dx;
       y += dy;
 
-      const hitLeft = x <= 0;
-      const hitRight = x + rect.width >= winWidth;
-      const hitTop = y <= 0;
-      const hitBottom = y + rect.height >= winHeight;
+      let bounced = false;
 
-      if (hitLeft || hitRight) {
+      if (x <= 0 || x + rect.width >= winWidth) {
         dx *= -1;
-        changeLogo();
+        bounced = true;
       }
-      if (hitTop || hitBottom) {
+      if (y <= 0 || y + rect.height >= winHeight) {
         dy *= -1;
+        bounced = true;
+      }
+
+      // Only change logo if we bounced and cooldown has passed
+      if (bounced && timestamp - lastBounceTime > bounceCooldown) {
         changeLogo();
+        lastBounceTime = timestamp;
       }
 
       logo.style.left = x + 'px';
@@ -84,7 +84,7 @@
       requestAnimationFrame(bounce);
     }
 
-    bounce();
+    bounce(performance.now());
   </script>
 </body>
 </html>
