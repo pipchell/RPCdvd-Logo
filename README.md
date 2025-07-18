@@ -27,9 +27,3 @@ The animation runs at a smooth 60 FPS and maintains perfect synchronization betw
 - **RequestAnimationFrame API**: For butter-smooth animation
 - **Efficient DOM Updates**: Minimal reflows/repaints
 - **Memory Management**: Automatic resource cleanup
-
-## 🛠️ Installation Guide
-
-### Prerequisites
-- Modern web browser (Chrome 90+, Firefox 85+, Safari 14+)
-- Basic understanding of HTML/JavaScript
