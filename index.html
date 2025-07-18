@@ -2,11 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>RPClogo DVD</title>
+  <title>DVD Logo - Random Bounce</title>
   <link rel="icon" href="logo2.png" type="image/png">
-  <link rel="shortcut icon" href="logo2.png">
-  <link rel="apple-touch-icon" href="logo2.png">
-  
   <style>
     html, body {
       margin: 0;
@@ -26,6 +23,7 @@
 <body>
   <img id="logo" src="4.png" alt="Bouncing Logo">
   
+  <!-- Preload all logo versions -->
   <img class="preload" src="1.png" alt="">
   <img class="preload" src="2.png" alt="">
   <img class="preload" src="3.png" alt="">
@@ -35,7 +33,7 @@
   <script>
     const logo = document.getElementById('logo');
     let x = 100, y = 100;
-    let dx = 3, dy = 3;
+    let dx = 3, dy = 3; // Initial speed (can be any value)
     let currentLogo = 4;
     const totalLogos = 5;
     
@@ -52,37 +50,38 @@
       logo.src = preloaded[currentLogo-1].src;
     }
 
+    function getRandomAngle() {
+      // Returns random angle between -45 and 45 degrees (converted to radians)
+      const degrees = (Math.random() * 90) - 45; // -45° to +45°
+      return degrees * Math.PI / 180;
+    }
+
     function bounce() {
       const rect = logo.getBoundingClientRect();
       const winWidth = window.innerWidth;
       const winHeight = window.innerHeight;
 
-      // Store previous position
-      const prevX = x;
-      const prevY = y;
-
-      // Move logo
       x += dx;
       y += dy;
 
-      // Check for edge collisions
       const hitLeft = x <= 0;
       const hitRight = x + rect.width >= winWidth;
       const hitTop = y <= 0;
       const hitBottom = y + rect.height >= winHeight;
 
       if (hitLeft || hitRight) {
-        dx *= -1;
-        x = hitLeft ? 0 : winWidth - rect.width; // Snap to exact edge position
-      }
-      if (hitTop || hitBottom) {
-        dy *= -1;
-        y = hitTop ? 0 : winHeight - rect.height; // Snap to exact edge position
+        const angle = getRandomAngle();
+        const speed = Math.sqrt(dx*dx + dy*dy); // Maintain current speed
+        dx = hitLeft ? Math.abs(speed * Math.cos(angle)) : -Math.abs(speed * Math.cos(angle));
+        dy = speed * Math.sin(angle);
+        changeLogo();
       }
 
-      // Only change logo if we actually crossed a boundary
-      if ((hitLeft || hitRight || hitTop || hitBottom) && 
-          !(prevX === x && prevY === y)) {
+      if (hitTop || hitBottom) {
+        const angle = getRandomAngle();
+        const speed = Math.sqrt(dx*dx + dy*dy); // Maintain current speed
+        dx = speed * Math.sin(angle);
+        dy = hitTop ? Math.abs(speed * Math.cos(angle)) : -Math.abs(speed * Math.cos(angle));
         changeLogo();
       }
 
