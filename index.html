@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bouncing Logo</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    #logo {
+      position: absolute;
+      width: 150px;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <img id="logo" src="logo2.png" alt="Bouncing Logo">
+
+  <script>
+    const logo = document.getElementById('logo');
+    let x = 100, y = 100;
+    let dx = 2, dy = 2;
+
+    function bounce() {
+      const rect = logo.getBoundingClientRect();
+      const winWidth = window.innerWidth;
+      const winHeight = window.innerHeight;
+
+      x += dx;
+      y += dy;
+
+      if (x + rect.width >= winWidth || x <= 0) {
+        dx *= -1;
+      }
+      if (y + rect.height >= winHeight || y <= 0) {
+        dy *= -1;
+      }
+
+      logo.style.left = x + 'px';
+      logo.style.top = y + 'px';
+
+      requestAnimationFrame(bounce);
+    }
+
+    bounce();
+  </script>
+</body>
+</html>
