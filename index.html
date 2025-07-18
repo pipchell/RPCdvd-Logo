@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>RPClogo DVD</title>
-  <!-- Favicon for all browsers -->
-  <link rel="icon" href="1.png" type="image/png">
-  <link rel="shortcut icon" href="1.png">
-  <link rel="apple-touch-icon" href="1.png">
+  <!-- Static favicon (always logo2.png) -->
+  <link rel="icon" href="logo2.png" type="image/png">
+  <link rel="shortcut icon" href="logo2.png">
+  <link rel="apple-touch-icon" href="logo2.png">
   
   <style>
     html, body {
@@ -29,19 +29,13 @@
   <script>
     const logo = document.getElementById('logo');
     let x = 100, y = 100;
-    let dx = 2, dy = 2;
+    let dx = 2, dy = 2; // Original speed
     let currentLogo = 1;
-    const totalLogos = 5;
-    let bounceCount = 0;
-    const bouncesBeforeChange = 5; // Change logo after this many bounces
+    const totalLogos = 5; // 1.png through 5.png
 
     function changeLogo() {
-      currentLogo = (currentLogo % totalLogos) + 1;
+      currentLogo = (currentLogo % totalLogos) + 1; // Cycle 1→2→3→4→5→1...
       logo.src = currentLogo + '.png';
-      // Update favicon too
-      document.querySelector('link[rel="icon"]').href = currentLogo + '.png';
-      document.querySelector('link[rel="shortcut icon"]').href = currentLogo + '.png';
-      document.querySelector('link[rel="apple-touch-icon"]').href = currentLogo + '.png';
     }
 
     function bounce() {
@@ -52,22 +46,19 @@
       x += dx;
       y += dy;
 
-      let bounced = false;
-      if (x + rect.width >= winWidth || x <= 0) {
-        dx *= -1;
-        bounced = true;
-      }
-      if (y + rect.height >= winHeight || y <= 0) {
-        dy *= -1;
-        bounced = true;
-      }
+      // Check for edge hits
+      const hitLeft = x <= 0;
+      const hitRight = x + rect.width >= winWidth;
+      const hitTop = y <= 0;
+      const hitBottom = y + rect.height >= winHeight;
 
-      if (bounced) {
-        bounceCount++;
-        if (bounceCount >= bouncesBeforeChange) {
-          changeLogo();
-          bounceCount = 0;
-        }
+      if (hitLeft || hitRight) {
+        dx *= -1;
+        changeLogo(); // Change on horizontal bounces
+      }
+      if (hitTop || hitBottom) {
+        dy *= -1;
+        changeLogo(); // Change on vertical bounces
       }
 
       logo.style.left = x + 'px';
