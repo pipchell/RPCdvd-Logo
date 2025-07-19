@@ -2,34 +2,32 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>RPClogo DVD</title>
-  <!-- Static favicon -->
+  <title>RPC DVD Logo</title>
   <link rel="icon" href="logo2.png" type="image/png">
-  <link rel="shortcut icon" href="logo2.png">
-  <link rel="apple-touch-icon" href="logo2.png">
-  
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      background: #000000;
-      overflow: hidden;
+      background: black;
       height: 100%;
+      overflow: hidden;
     }
+
     #logo {
       position: absolute;
       width: 150px;
       height: auto;
     }
-    /* Hide preloaded images */
-    .preload { display: none; }
+
+    .preload {
+      display: none;
+    }
   </style>
 </head>
 <body>
-  <!-- Visible logo starting with 4.png -->
-  <img id="logo" src="4.png" alt="Bouncing Logo">
+  <img id="logo" src="4.png" alt="RPC Logo">
   
-  <!-- Preload all logo versions -->
+  <!-- Preload logos -->
   <img class="preload" src="1.png" alt="">
   <img class="preload" src="2.png" alt="">
   <img class="preload" src="3.png" alt="">
@@ -37,77 +35,73 @@
   <img class="preload" src="5.png" alt="">
 
   <script>
-    const logo = document.getElementById('logo');
-    let x = 100, y = 100;
-    // Set initial velocity to create a 45 degree angle
-    let dx = 3, dy = 3; // Same speed for both axes
-    let currentLogo = 4; // Start with 4.png
+    const logo = document.getElementById("logo");
     const totalLogos = 5;
-    
-    // Preload all images
+    let currentLogo = 4;
+
     const preloaded = [];
     for (let i = 1; i <= totalLogos; i++) {
       const img = new Image();
-      img.src = i + '.png';
+      img.src = `${i}.png`;
       preloaded.push(img);
     }
 
+    let speed = 3;
+    let dx = speed;
+    let dy = speed;
+    let x = 100;
+    let y = 100;
+
+    // Randomize initial direction (but still 45°)
+    if (Math.random() < 0.5) dx *= -1;
+    if (Math.random() < 0.5) dy *= -1;
+
     function changeLogo() {
       currentLogo = (currentLogo % totalLogos) + 1;
-      logo.src = preloaded[currentLogo-1].src;
+      logo.src = preloaded[currentLogo - 1].src;
     }
 
-    function bounce() {
-      const rect = logo.getBoundingClientRect();
-      const winWidth = window.innerWidth;
-      const winHeight = window.innerHeight;
+    function update() {
+      const w = logo.clientWidth;
+      const h = logo.clientHeight;
+      const sw = window.innerWidth;
+      const sh = window.innerHeight;
+
+      let bounced = false;
+
+      if (x + dx < 0 || x + dx + w > sw) {
+        dx *= -1;
+        bounced = true;
+      }
+
+      if (y + dy < 0 || y + dy + h > sh) {
+        dy *= -1;
+        bounced = true;
+      }
 
       x += dx;
       y += dy;
 
-      const hitLeft = x <= 0;
-      const hitRight = x + rect.width >= winWidth;
-      const hitTop = y <= 0;
-      const hitBottom = y + rect.height >= winHeight;
+      logo.style.left = `${x}px`;
+      logo.style.top = `${y}px`;
 
-      if (hitLeft || hitRight) {
-        dx *= -1;
+      if (bounced) {
+        const hitCorner = (x <= 0 || x + w >= sw) && (y <= 0 || y + h >= sh);
+        if (hitCorner) {
+          console.log("🎯 Corner hit!");
+          // You can add corner-only behavior here
+        }
         changeLogo();
       }
-      if (hitTop || hitBottom) {
-        dy *= -1;
-        changeLogo();
-      }
 
-      // Adjust position if we went past the boundary
-      if (hitLeft) x = 0;
-      if (hitRight) x = winWidth - rect.width;
-      if (hitTop) y = 0;
-      if (hitBottom) y = winHeight - rect.height;
-
-      logo.style.left = x + 'px';
-      logo.style.top = y + 'px';
-
-      requestAnimationFrame(bounce);
+      requestAnimationFrame(update);
     }
 
-    // Start in a random position (but not too close to edges)
-    function randomStart() {
-      const rect = logo.getBoundingClientRect();
-      const winWidth = window.innerWidth;
-      const winHeight = window.innerHeight;
-      
-      x = Math.max(50, Math.random() * (winWidth - rect.width - 50));
-      y = Math.max(50, Math.random() * (winHeight - rect.height - 50));
-      
-      // Randomize initial direction (but maintain 45 degree angle)
-      const directions = [-1, 1];
-      dx = 3 * directions[Math.floor(Math.random() * directions.length)];
-      dy = 3 * directions[Math.floor(Math.random() * directions.length)];
-    }
-
-    randomStart();
-    bounce();
+    window.onload = () => {
+      x = Math.random() * (window.innerWidth - logo.clientWidth);
+      y = Math.random() * (window.innerHeight - logo.clientHeight);
+      update();
+    };
   </script>
 </body>
 </html>
