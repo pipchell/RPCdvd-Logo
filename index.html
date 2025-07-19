@@ -17,6 +17,7 @@
       position: absolute;
       width: 150px;
       height: auto;
+      visibility: hidden; /* Hide until positioned */
     }
 
     .preload {
@@ -52,7 +53,7 @@
     let x = 100;
     let y = 100;
 
-    // Randomize initial direction (but still 45°)
+    // Randomize initial direction (45° but flipped randomly)
     if (Math.random() < 0.5) dx *= -1;
     if (Math.random() < 0.5) dy *= -1;
 
@@ -100,6 +101,11 @@
     window.onload = () => {
       x = Math.random() * (window.innerWidth - logo.clientWidth);
       y = Math.random() * (window.innerHeight - logo.clientHeight);
+
+      logo.style.left = `${x}px`;
+      logo.style.top = `${y}px`;
+      logo.style.visibility = "visible"; // Reveal after positioning
+
       update();
     };
   </script>
